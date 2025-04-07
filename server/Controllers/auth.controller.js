@@ -47,7 +47,7 @@ export const signup = async(req, res) => {
         }
     } catch (error) {
         console.log(error)
-        res.status(500).json({message: "Internal Server Error", error})
+        res.status(500).json({message: "Internal Server Error", error: error.message})
     }
 }
 
@@ -57,14 +57,45 @@ export const login = async(req, res) => {
         if ( !email || !password ){
             return res.status(400).json({ message: "All fields are required" })
         }
+        const user = await User.findOne({email})
+        if (!user) {
+            return res.status(404).json({message: "Invalid credentials"})
+        }
+
+        const passwordCheck = await bcrypt.compare(password, user.password)
+
+        if (!passwordCheck) {
+            res.status(404).json({ message: "invalid credentials" })
+        }
+
+        generateToken(user._id, res)
+        res.status(200).json({
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            profilePic: user.profilePic
+        })
+
     } catch (error) {
-        console.log(error)
-        res.status(500).json({message: 'Internal Server Error', error})
+        console.log(error.message)
+        res.status(500).json({message: 'Internal Server Error', error: error.message})
     }
 }
 
-export const logout = async(req, res) => {}
+export const logout = async(req, res) => {
+   try {
+        res.cookie('jwt', '', {maxAge: 0})
+        res.status(200).json({message: "log out successful"})
+   } catch (error) {
+        console.log(error.message)
+        res.status(500).json({message: "Internal Server Error", error: error.message})
+   }
+}
 
 export const updateProfile = async() => {
-
+    try {
+        
+    } catch (error) {
+        
+    }
 }
