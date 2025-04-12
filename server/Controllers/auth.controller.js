@@ -96,6 +96,7 @@ export const updateProfilePic = async(req, res) => {
     try {
         const {profilePic} = req.body
         const userId = req.user._id
+        console.log(req.body)
 
         if(!profilePic){
             return res.status(400).json({message: "Profile picture is not provided"})
