@@ -1,14 +1,18 @@
 import express from 'express'
 import dotenv from 'dotenv'
+import cors from 'cors'
 import cookieParser from 'cookie-parser'
+import { app, server } from './lib/socketio.js'
 dotenv.config()
-const app = express()
+
+import {authRouter} from './Routes/auth.js'
+
 
 import { connectDb } from './DB/connectDB.js'
-
-import { authRouter } from './Routes/auth.js'
-
-
+app.use(cors({
+    origin: 'http://localhost:5173',
+    credentials: true
+}))
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 app.use(cookieParser())
@@ -21,8 +25,8 @@ app.get('/test', (req, res) => {
 const connect = async () => {
     try {
         await connectDb(process.env.MONGO_URI)
-        app.listen(process.env.PORT, (() => {
-            console.log(`server listening on PODT ${process.env.PORT}`);
+        server.listen(process.env.PORT, (() => {
+            console.log(`server listening on PORT ${process.env.PORT}`);
         }))
     } catch (error) {
         console.error(error)

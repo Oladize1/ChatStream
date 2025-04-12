@@ -1,7 +1,7 @@
 import User from '../models/User.js'
 import { generateToken } from '../utils/generateToken.js'
 import bcrypt from 'bcryptjs'
-import jwt from 'jsonwebtoken'
+import cloudinary from '../lib/cloudinary.js'
 
 
 export const signup = async(req, res) => {
@@ -65,7 +65,7 @@ export const login = async(req, res) => {
         const passwordCheck = await bcrypt.compare(password, user.password)
 
         if (!passwordCheck) {
-            res.status(404).json({ message: "invalid credentials" })
+            return res.status(404).json({ message: "invalid credentials" })
         }
 
         generateToken(user._id, res)
@@ -92,10 +92,29 @@ export const logout = async(req, res) => {
    }
 }
 
-export const updateProfile = async() => {
+export const updateProfilePic = async(req, res) => {
     try {
-        
+        const {profilePic} = req.body
+        const userId = req.user._id
+
+        if(!profilePic){
+            return res.status(400).json({message: "Profile picture is not provided"})
+        }
+        const uploadResponse = await cloudinary.uploader.upload(profilePic)
+        const updatedUser = await User.findByIdAndUpdate(userId, {profilePic: uploadResponse.secure_url}, {new: true})
+        res.status(201).json({updatedUser})
     } catch (error) {
-        
+      console.log(error.message)
+      res.status(500).json({message: "Internal Server Error", error: error.message})  
+    }
+}
+
+export const checkAuth = (req, res) => {
+    try {
+        console.log(req)
+        res.status(200).json(req.user)
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({message: "Internal Server Error", error: error})
     }
 }
