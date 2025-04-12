@@ -7,6 +7,7 @@ import LoginPage from './Pages/LoginPage'
 import ProtectedRoute from './Components/ProtectedRoute'
 import HomePage from './Pages/HomePage'
 import Navbar from './Components/Navbar'
+import ProfilePage from './Pages/ProfilePage'
 const App = () => {
   const { authUser, checkAuth } = useAuthStore()
   
@@ -23,6 +24,7 @@ const App = () => {
       <Route path='/login' element={<LoginPage/>}/>
       <Route element={<ProtectedRoute/>}>
         <Route path='/' element={<HomePage/>}/>
+        <Route path='/profile' element={<ProfilePage/>}/>
       </Route>
     </Routes>
     </>
