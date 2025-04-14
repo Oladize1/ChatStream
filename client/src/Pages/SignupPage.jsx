@@ -58,11 +58,12 @@ const SignUpPage = () => {
            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
             <g strokeLinejoin="round" strokeLinecap="round"  strokeWidth="2.5" fill="none" stroke="currentColor">
               <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2">
-                </path><circle cx="12" cy="7" r="4">
-                  </ circle></g>
+                </path>
+                <circle cx="12" cy="7" r="4"/>
+            </g>
           </svg>
           <input 
-          type="input" 
+          type="text" 
           required 
           placeholder="Name" 
           pattern="[A-Za-z][A-Za-z0-9\-]*" 
@@ -74,7 +75,7 @@ const SignUpPage = () => {
           />
       </label>
     <p className="validator-hint">
-     Must be 3 to 30 characters
+      Must be 3 to 30 characters
       <br/>containing only letters or numbers
       </p>
       </div>
@@ -121,7 +122,6 @@ const SignUpPage = () => {
         </p>
       </div>
       <button disabled={!canSave} className="flex btn bg-blue-500 text-amber-100  btn-wide items-center mt-2 mx-auto">Sign up</button>
-      {error && <p className='text-red-500 font-semibold mt-2'>{error}</p>}
       <p className="text-center mt-2">Already have an account? <Link to="/login" className="text-blue-500">Login</Link></p>
       </form>
     </div>

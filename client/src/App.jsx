@@ -8,6 +8,8 @@ import ProtectedRoute from './Components/ProtectedRoute'
 import HomePage from './Pages/HomePage'
 import Navbar from './Components/Navbar'
 import ProfilePage from './Pages/ProfilePage'
+import ChatRoom from './Components/ChatRoom.jsx'
+import Socket from './Components/socket.jsx'
 const App = () => {
   const { authUser, checkAuth } = useAuthStore()
   
@@ -23,7 +25,8 @@ const App = () => {
       <Route path='/signup' element={<SignupPage/>}/>
       <Route path='/login' element={<LoginPage/>}/>
       <Route element={<ProtectedRoute/>}>
-        <Route path='/' element={<HomePage/>}/>
+        {/* <Route path='/' element={<HomePage/>}/> */}
+        <Route path='/' element={<Socket/>}/>
         <Route path='/profile' element={<ProfilePage/>}/>
       </Route>
     </Routes>

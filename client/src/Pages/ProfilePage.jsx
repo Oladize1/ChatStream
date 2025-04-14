@@ -1,8 +1,8 @@
 import React, { useRef } from 'react';
 import { useAuthStore } from '../Store/Store';
-
+import Spinner from '../Components/Spinner'
 const ProfilePage = () => {
-    const { authUser, updateProfilePic } = useAuthStore()
+    const { authUser, updateProfilePic, isLoading } = useAuthStore()
   // Hardcoded user data based on your provided object.
   const userData = {
     createdAt: authUser?.createdAt || " ",
@@ -11,6 +11,9 @@ const ProfilePage = () => {
     profilePic: authUser?.profilePic || "./profile.png",  // If empty, we'll show a placeholder image.
     updatedAt: authUser?.updatedAt || "",
   };
+
+
+ 
 
   const fileInputRef = useRef(null);
 
@@ -22,11 +25,13 @@ const ProfilePage = () => {
   // Handle file selection.
   const handleFileChange = async (e) => {
     const profilePic = e.target.files[0];
-    if (profilePic) {
-      // Here you would typically upload the file to your server.
-      console.log("Selected file:", profilePic);
-      await updateProfilePic(profilePic.name)
-      // After successful upload, update your user's profilePic URL.
+    if (!profilePic) return;
+    const reader = new FileReader()
+    reader.readAsDataURL(profilePic)
+
+    reader.onload = async () => {
+        const base64Image = reader.result
+        await updateProfilePic(base64Image)
     }
   };
 
@@ -36,8 +41,8 @@ const ProfilePage = () => {
         <div className="card-body items-center text-center">
           {/* Profile Avatar */}
           <div className="avatar">
-            <div className="w-24 rounded-full">
-                <img src={userData.profilePic} alt="Profile" />
+            <div className="w-32 h-32 rounded-full overflow-hidden">
+                <img src={userData.profilePic} alt="Profile" className="object-cover object-center w-full h-full"/>
             </div>
           </div>
           {/* Hidden file input and update button */}

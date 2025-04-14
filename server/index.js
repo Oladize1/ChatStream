@@ -6,6 +6,7 @@ import { app, server } from './lib/socketio.js'
 dotenv.config()
 
 import {authRouter} from './Routes/auth.js'
+import { messageRouter } from './Routes/message.js'
 
 
 import { connectDb } from './DB/connectDB.js'
@@ -17,6 +18,7 @@ app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 app.use(cookieParser())
 app.use('/api/auth', authRouter)
+app.use('/api/message', messageRouter)
 
 app.get('/test', (req, res) => {
     res.send('Hello world')

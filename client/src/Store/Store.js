@@ -52,10 +52,12 @@ export const useAuthStore = create((set, get) =>  ({
         set({isLoading: true, error: null})
         try {
             const res = await axiosInstance.put('/auth/update-profile', {profilePic})
-            set({isLoading: false, error: null, authUser: res.data})
+            set({isLoading: false, error: null, authUser: res.data.updatedUser})
+            toast.success('Profi;e Picture Uploaded successfully!')
         } catch (error) {
             console.log(error.response.data.message)
             set({isLoading: false, error: error.response.data.message})
+            toast.error(error.response.data.message || 'file too large')
         }
     },
     checkAuth: async() => {
