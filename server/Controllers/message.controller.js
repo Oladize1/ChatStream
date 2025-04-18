@@ -3,7 +3,6 @@ import cloudinary from '../lib/cloudinary.js'
 
 export const sendMessage = async(req, res) =>{
     try {
-        console.log(req.user)
         const { message, image } = req.body
         const { id:recieverId } = req.params
         const {_id: userId } = req.user
@@ -24,9 +23,28 @@ export const sendMessage = async(req, res) =>{
         })
         await newMessage.save()
         console.log(recieverId, message, userId)
-     res.status(201).json()  
+     res.status(201).json(newMessage)  
     } catch (error) {
         console.log(error)
         res.status(500).json({message: error})
+    }
+}
+
+export const getMessage = async(req, res) => {
+    try {
+        const {_id } = req.user
+        const { id } = req.params
+
+        const messages = await Message.find({
+            $or : [
+                {senderId: _id, recieverId: id},
+                {senderId: id, recieverId: _id}
+            ]
+        }).sort({createdAt:1})
+        res.status(200).json(messages)
+        console.log("messages from backend", messages)
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({message: "Internal sever Error", error})
     }
 }

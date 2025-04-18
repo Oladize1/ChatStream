@@ -11,7 +11,12 @@ const Navbar = () => {
         <img src="./logo-transparent.png" alt="Chat Stream logo" width={60} height={60}/>
     </Link>
   </div>
-  {authUser ? <div className="flex-none">
+  {authUser ?
+   <div className="flex gap-4">
+    <div>
+    <input type="text" placeholder="Add Friend and chat away.." className="input input-bordered w-24 md:w-auto" />
+    <button className='btn '>Add Friend with email</button>
+    </div>
    
     <div className="dropdown dropdown-end">
       <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
@@ -33,7 +38,8 @@ const Navbar = () => {
         <li className='cursor-pointer' onClick={() => logout()}>Logout</li>
       </ul>
     </div>
-  </div>: ''}
+  </div>
+  : ''}
  
     </div>
   )

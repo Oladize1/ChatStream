@@ -1,7 +1,8 @@
 import { create } from 'zustand'
 import { axiosInstance } from './AxiosInstance.js'
 import toast from 'react-hot-toast'
-import axios from 'axios'
+
+
 
 
 export const useAuthStore = create((set, get) =>  ({
@@ -9,6 +10,9 @@ export const useAuthStore = create((set, get) =>  ({
     authUser: null,
     isLoading: false,
     error: null,
+    friendsList: [],
+    selectedUser: [],
+    selectedUserMessages: [],
     signup: async(name, email, password) => {
        set({isAuthenticated:false, isLoading:true, error: null, authUser: null})
        try {
@@ -31,7 +35,7 @@ export const useAuthStore = create((set, get) =>  ({
             if(res.data){
                 toast.success('login successfully')
             }
-            set({isAuthenticated:true, isLoading:false, error:null, authUser: res.data})
+            set({isAuthenticated:true, isLoading:false, error:null, authUser: res.data, friendsList: res.data.friends})
         } catch (error) {
             console.log(error.response.data.message)
             toast.error(error.response?.data?.message)
@@ -69,6 +73,28 @@ export const useAuthStore = create((set, get) =>  ({
         } catch (error) {
             console.log(error)
             set({isLoading: false, error: error, authUser: null, isAuthenticated: false})
+        }
+    },
+    getMessage: async(id) => {
+        set({isLoading: true, error: null})
+        try {
+            const selectUser = await axiosInstance.get(`http://localhost:3000/api/message/${id}`)
+            console.log(selectUser)
+            set({isLoading: false, error: null, selectedUser: [id], selectedUserMessages: [selectUser.data.text]})
+        } catch (error) {
+            console.log(error.response.data.message)
+            set({isLoading: false, error: error.response.data.message})
+        }
+    },
+    addFriend: async(email) => {
+        set({isLoading: true, error: null})
+        try {
+            const addNewFriend = await axiosInstance.post('/auth/add-friends',{email})
+            const existingFriends = get().friendsList
+        } catch (error) {
+            console.log(error.response.data.message)
+            set({isLoading: false, error: error.response.data.message})
+            toast.error(error.response.data.message)
         }
     }
 }))

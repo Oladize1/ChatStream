@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
+import { useAuthStore } from '../Store/Store.js';
 
 const ChatApp = () => {
+  const { friendsList } = useAuthStore()
+  console.log({friends: friendsList})
   const [activeChat, setActiveChat] = useState(1);
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([
@@ -13,7 +16,19 @@ const ChatApp = () => {
   const users = [
     { id: 1, name: 'John Doe', avatar: 'https://i.pravatar.cc/50?img=1', lastMessage: 'Hey, how are you?', time: '2 min ago', online: true },
     { id: 2, name: 'Jane Smith', avatar: 'https://i.pravatar.cc/50?img=2', lastMessage: 'See you tomorrow!', time: '1 hr ago', online: false },
+    { id: 3, name: 'John Doe', avatar: 'https://i.pravatar.cc/50?img=1', lastMessage: 'Hey, how are you?', time: '2 min ago', online: true },
+    { id: 4, name: 'Jane Smith', avatar: 'https://i.pravatar.cc/50?img=2', lastMessage: 'See you tomorrow!', time: '1 hr ago', online: false },
+    { id: 5, name: 'John Doe', avatar: 'https://i.pravatar.cc/50?img=1', lastMessage: 'Hey, how are you?', time: '2 min ago', online: true },
+    { id: 6, name: 'Jane Smith', avatar: 'https://i.pravatar.cc/50?img=2', lastMessage: 'See you tomorrow!', time: '1 hr ago', online: false },
+    { id: 7, name: 'John Doe', avatar: 'https://i.pravatar.cc/50?img=1', lastMessage: 'Hey, how are you?', time: '2 min ago', online: true },
+    { id: 8, name: 'Jane Smith', avatar: 'https://i.pravatar.cc/50?img=2', lastMessage: 'See you tomorrow!', time: '1 hr ago', online: false },
+    { id: 9, name: 'John Doe', avatar: 'https://i.pravatar.cc/50?img=1', lastMessage: 'Hey, how are you?', time: '2 min ago', online: true },
+    { id: 10, name: 'Jane Smith', avatar: 'https://i.pravatar.cc/50?img=2', lastMessage: 'See you tomorrow!', time: '1 hr ago', online: false },
+    { id: 11, name: 'John Doe', avatar: 'https://i.pravatar.cc/50?img=1', lastMessage: 'Hey, how are you?', time: '2 min ago', online: true },
+    { id: 12, name: 'Jane Smith', avatar: 'https://i.pravatar.cc/50?img=2', lastMessage: 'See you tomorrow!', time: '1 hr ago', online: false },
   ];
+
+
 
   // Check screen size and adjust sidebar visibility
   useEffect(() => {
@@ -53,17 +68,7 @@ const ChatApp = () => {
 
   return (
     <div className="flex h-screen bg-base-200">
-      {/* Mobile Header Button */}
-      {isMobile && !showSidebar && (
-        <button 
-          onClick={() => setShowSidebar(true)}
-          className="md:hidden absolute top-4 left-4 z-50 btn btn-circle btn-sm"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
-        </button>
-      )}
+      
 
       {/* Sidebar */}
       <div className={`${showSidebar ? 'block' : 'hidden'} md:block w-full md:w-1/3 lg:w-1/4 border-r border-base-300 bg-base-100 flex flex-col absolute md:relative z-40 h-full`}>
@@ -91,8 +96,9 @@ const ChatApp = () => {
             </span>
           </div>
         </div>
+        <div className="h-full">
         <div className="overflow-y-auto flex-1">
-          {users.map((user) => (
+          {friendsList.map((user) => (
             <div
               key={user.id}
               className={`flex items-center p-4 hover:bg-base-300 cursor-pointer ${activeChat === user.id ? 'bg-base-300' : ''}`}
@@ -100,16 +106,17 @@ const ChatApp = () => {
             >
               <div className={`avatar ${user.online ? 'online' : 'offline'}`}>
                 <div className="w-12 rounded-full">
-                  <img src={user.avatar} alt={user.name} />
+                  <img src={user.profilePic || './profile.png'} alt={user.name} />
                 </div>
               </div>
               <div className="ml-3 flex-1">
                 <h3 className="font-semibold">{user.name}</h3>
-                <p className="text-sm text-gray-500 truncate">{user.lastMessage}</p>
+                <p className="text-sm text-gray-500 truncate">{user.lastMessage || ''}</p>
               </div>
-              <div className="text-xs text-gray-400">{user.time}</div>
+              <div className="text-xs text-gray-400">{user.time || ''}</div>
             </div>
           ))}
+        </div>
         </div>
       </div>
 

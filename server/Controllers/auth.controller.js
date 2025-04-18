@@ -2,6 +2,7 @@ import User from '../models/User.js'
 import { generateToken } from '../utils/generateToken.js'
 import bcrypt from 'bcryptjs'
 import cloudinary from '../lib/cloudinary.js'
+import { sendMailToNewUser } from '../lib/mail.js'
 
 
 export const signup = async(req, res) => {
@@ -57,7 +58,10 @@ export const login = async(req, res) => {
         if ( !email || !password ){
             return res.status(400).json({ message: "All fields are required" })
         }
-        const user = await User.findOne({email})
+        const user = await User.findOne({email}).populate({
+            path: 'friends',
+            select: 'name email profilePic'
+        })
         if (!user) {
             return res.status(404).json({message: "Invalid credentials"})
         }
@@ -73,7 +77,8 @@ export const login = async(req, res) => {
             _id: user._id,
             name: user.name,
             email: user.email,
-            profilePic: user.profilePic
+            profilePic: user.profilePic,
+            friends: user.friends
         })
 
     } catch (error) {
@@ -116,5 +121,52 @@ export const checkAuth = (req, res) => {
     } catch (error) {
         console.log(error)
         res.status(500).json({message: "Internal Server Error", error: error})
+    }
+}
+
+export const addFriends = async(req, res) => {
+    try {
+        const {id} = req.user
+        const { email } = req.body
+        if (!email) {
+            return res.status(400).json({message: "email not present"})
+        }
+        const user = await User.findById(id).populate({
+            path: 'friends',
+            select: 'name, email, profilePic'
+        })
+        const friend = await User.findOne({email})
+        if(!friend){
+            console.log("we will ask the user to sign up")
+            await sendMailToNewUser(user.email, email)
+            return res.status(200).json({message:"friend request sent succesfully"})
+        }
+
+
+        const alreadyFriends = user.friends.some(f => f._id.equals(friend._id));
+        const isSelf = user._id.equals(friend._id);
+
+        console.log("alreadyFriends", alreadyFriends)
+        console.log("isSelf", isSelf)
+        if(alreadyFriends){
+            return res.status(400).json({message: "User is already in your friend list"})
+        }
+
+        if (isSelf) {
+            return res.status(400).json({message: "You can't add yourself as friend"})
+        }
+        if (user && friend && !alreadyFriends && !isSelf) {
+            user.friends.push(friend._id)
+            friend.friends.push(user._id)
+            await user.save()
+            await friend.save()
+        }
+
+        const updatedUser = await User.findById(id).populate('friends', 'name email profilePic');
+        return res.status(201).json({ message: "Add friend Successfully", friends: updatedUser.friends });
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({message: "Internal Server Error", error})
     }
 }
