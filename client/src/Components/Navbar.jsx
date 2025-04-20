@@ -1,9 +1,22 @@
-import React from 'react'
+import React, {useState} from 'react'
 import { Link } from 'react-router-dom'
 import { useAuthStore } from '../Store/Store'
+import toast from 'react-hot-toast'
 
 const Navbar = () => {
-  const {authUser, logout } = useAuthStore()
+  const [newFriend, setNewFriend] = useState('')
+  const {authUser, logout, addFriend } = useAuthStore()
+
+
+  const handleAddNewFriend = async() => {
+    try {
+      await addFriend(newFriend)
+      setNewFriend('')
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   return (
     <div className="navbar bg-base-100 shadow-sm">
   <div className="flex-1">
@@ -12,10 +25,19 @@ const Navbar = () => {
     </Link>
   </div>
   {authUser ?
-   <div className="flex gap-4">
-    <div>
-    <input type="text" placeholder="Add Friend and chat away.." className="input input-bordered w-24 md:w-auto" />
-    <button className='btn '>Add Friend with email</button>
+   <div className="flex gap-2">
+    <div className='flex'>
+      <div className="flex flex-col gap-1">
+    <input className="input validator"
+            type="email" 
+            required 
+            placeholder="mail@site.com" 
+            value={newFriend} 
+            onChange={(e) => setNewFriend(e.target.value)} 
+       />
+        <div className="validator-hint">Enter valid email address</div>
+      </div>
+    <button className='btn ' onClick={() => handleAddNewFriend()}>Add Friend</button>
     </div>
    
     <div className="dropdown dropdown-end">

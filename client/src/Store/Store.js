@@ -1,11 +1,12 @@
 import { create } from 'zustand'
 import { axiosInstance } from './AxiosInstance.js'
+import {persist} from 'zustand/middleware'
 import toast from 'react-hot-toast'
 
 
 
 
-export const useAuthStore = create((set, get) =>  ({
+export const useAuthStore = create(persist((set, get) =>  ({
     isAuthenticated: false,
     authUser: null,
     isLoading: false,
@@ -78,9 +79,9 @@ export const useAuthStore = create((set, get) =>  ({
     getMessage: async(id) => {
         set({isLoading: true, error: null})
         try {
-            const selectUser = await axiosInstance.get(`http://localhost:3000/api/message/${id}`)
-            console.log(selectUser)
-            set({isLoading: false, error: null, selectedUser: [id], selectedUserMessages: [selectUser.data.text]})
+            const messages = await axiosInstance.get(`/message/${id}`)
+            console.log({messageBy: messages})
+            set({isLoading: false, error: null, selectedUser: [id], selectedUserMessages: messages.data})
         } catch (error) {
             console.log(error.response.data.message)
             set({isLoading: false, error: error.response.data.message})
@@ -90,11 +91,15 @@ export const useAuthStore = create((set, get) =>  ({
         set({isLoading: true, error: null})
         try {
             const addNewFriend = await axiosInstance.post('/auth/add-friends',{email})
+            console.log("new friend", addNewFriend)
             const existingFriends = get().friendsList
+            console.log("existingfriends",existingFriends)
+            set({isLoading: false, error: null, friendsList: addNewFriend.data.friends})
+            toast.success(addNewFriend.data.message)
         } catch (error) {
             console.log(error.response.data.message)
             set({isLoading: false, error: error.response.data.message})
             toast.error(error.response.data.message)
         }
     }
-}))
+})))

@@ -41,7 +41,8 @@ export const signup = async(req, res) => {
             res.status(201).json({
                 _id: newUser._id,
                 name:newUser.name,
-                email: newUser.email
+                email: newUser.email,
+                friends: newUser.friends || []
             })
         } else {
             res.status(400).json({message: "invalid data"})
@@ -139,7 +140,7 @@ export const addFriends = async(req, res) => {
         if(!friend){
             console.log("we will ask the user to sign up")
             await sendMailToNewUser(user.email, email)
-            return res.status(200).json({message:"friend request sent succesfully"})
+            return res.status(200).json({message:"friend request sent succesfully", friends: user.friends})
         }
 
 
