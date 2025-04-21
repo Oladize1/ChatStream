@@ -101,5 +101,17 @@ export const useAuthStore = create(persist((set, get) =>  ({
             set({isLoading: false, error: error.response.data.message})
             toast.error(error.response.data.message)
         }
+    },
+    sendMessage: async(message, image, id) => {
+        set({isLoading: true, error: null})
+        try {
+            const sendingMessage = await axiosInstance.post(`/message/send/${id}`, {message, image})
+            const messages = get().selectedUserMessages
+            set({isLoading:false, error: null, selectedUser:[...messages, sendingMessage.data]})
+        } catch (error) {
+            console.log(error.response.data.message)
+            set({isLoading: false, error: error.response.data.message})
+            toast.error(error.response.data.message)
+        }
     }
 })))

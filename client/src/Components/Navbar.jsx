@@ -25,7 +25,7 @@ const Navbar = () => {
     </Link>
   </div>
   {authUser ?
-   <div className="flex gap-2">
+   <div className="flex gap-1">
     <div className='flex'>
       <div className="flex flex-col gap-1">
     <input className="input validator"

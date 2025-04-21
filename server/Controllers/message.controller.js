@@ -7,7 +7,7 @@ export const sendMessage = async(req, res) =>{
         const { id:recieverId } = req.params
         const {_id: userId } = req.user
 
-
+        
         let imageUrl;
         if(image){
             const response = await cloudinary.uploader.upload(image)
@@ -22,7 +22,6 @@ export const sendMessage = async(req, res) =>{
             image: imageUrl || ''
         })
         await newMessage.save()
-        console.log(recieverId, message, userId)
      res.status(201).json(newMessage)  
     } catch (error) {
         console.log(error)

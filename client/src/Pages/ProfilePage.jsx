@@ -13,7 +13,9 @@ const ProfilePage = () => {
   };
 
 
- 
+ if (isLoading) {
+  return <Spinner/>
+ }
 
   const fileInputRef = useRef(null);
 

@@ -1,17 +1,30 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuthStore } from '../Store/Store.js';
+import {format} from 'timeago.js'
+import WelcomeBanner from '../Components/WelcomeGanner.jsx';
 
 const ChatApp = () => {
-  const { friendsList, getMessage, selectedUserMessages, authUser, selectedUser } = useAuthStore()
-  console.log("check", authUser._id, selectedUserMessages)
+  const { friendsList, getMessage, selectedUserMessages, authUser, selectedUser, sendMessage } = useAuthStore()
+  console.log("selected user id",selectedUser)
   const [activeChat, setActiveChat] = useState(null);
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState(selectedUserMessages);
   const [showSidebar, setShowSidebar] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
+  const [selectImage, setSelectImage] = useState(null)
 
-  
+  const messagesEndRef = useRef(null)
+  const imageRef = useRef(null)
 
+  useEffect(()=>{
+    setMessages(selectedUserMessages)
+  }, [selectedUserMessages])
+
+   useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [selectedUserMessages]);
 
   // Check screen size and adjust sidebar visibility
   useEffect(() => {
@@ -29,17 +42,30 @@ const ChatApp = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const handleSendMessage = () => {
-    if (message.trim() === '') return;
-    const newMessage = {
-      id: messages.length + 1,
-      sender: 'You',
-      text: message,
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      incoming: false,
+  const handleSelectPic = () => {
+    imageRef.current.click()
+  }
+  const handleImageSelection = (e) => {
+    const file = e.target.files[0];
+    if(!file) {
+      setSelectImage('')
+      return
     };
-    setMessages([...messages, newMessage]);
+    const reader = new FileReader()
+    reader.readAsDataURL(file)
+    reader.onload = ()=>{
+      const image = reader.result
+      setSelectImage(image)
+    }
+    reader.readAsDataURL(file)
+  }
+  const handleSendMessage =  () => {
+    if (message.trim() === '' && !selectImage) return;
+
+    sendMessage(message, selectImage ,selectedUser[0])
+    setSelectImage(null)
     setMessage('');
+    if(imageRef.current) imageRef.current.value = ''
   };
 
   const handleChatSelect = (userId) => {
@@ -86,7 +112,7 @@ const ChatApp = () => {
           {friendsList.map((user) => (
             <div
               key={user._id}
-              className={`flex items-center p-4 hover:bg-base-300 cursor-pointer ${activeChat === user.id ? 'bg-base-300' : ''}`}
+              className={`flex items-center p-4 hover:bg-base-300 cursor-pointer ${activeChat === user._id ? 'bg-base-300' : ''}`}
               onClick={() => handleChatSelect(user._id)}
             >
               <div className={`avatar ${user.online ? 'online' : 'offline'}`}>
@@ -118,7 +144,7 @@ const ChatApp = () => {
           </button>
         )}
 
-        {!activeChat ? <div className='flex items-center justify-center'>Welcome to ChatStream!!!</div>: 
+        {!activeChat ? <WelcomeBanner/>: 
         <div>
         {/* Chat Header */}
         <div className="p-4 border-b border-base-300 bg-base-100 flex items-center">
@@ -160,7 +186,7 @@ const ChatApp = () => {
 
         {/* Messages */}
         <div className="flex-1 p-4 overflow-y-auto bg-base-100">
-          {selectedUserMessages?.map((msg) => (
+          {messages?.map((msg) => (
             <div
               key={msg._id}
               className={`chat ${msg.senderId === authUser._id? 'chat-end' : 'chat-start'} mb-4`}
@@ -180,16 +206,42 @@ const ChatApp = () => {
             />
                 </div>
               </div>
-              <div className="chat-bubble bg-base-300 text-base-content">{msg?.text}</div>
-              {/* <div className="chat-footer opacity-50 text-xs mt-1">{msg.time}</div> */}
+              <div className="chat-bubble bg-base-300 text-base-content">
+                {msg.image && <img src={msg.image} className='sm:max-w-[200px] rounded-md mb-2'/>}
+                {msg?.text}
+                </div>
+              <div className="chat-footer opacity-50 text-xs mt-1">{format(msg.createdAt)}</div>
+              <div ref={messagesEndRef}/>
             </div>
           ))}
         </div>
 
         {/* Message Input */}
-        <div className="p-4 border-t border-base-300 bg-base-100 flex items-center">
-          <button className="btn btn-ghost btn-circle">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <div className="flex flex-col">
+          <div className='relative block'>
+          { selectImage && (
+              <div className="relative w-2xs">
+                <img src={selectImage} alt="Selected" className="w-full h-full object-cover rounded-md" />
+                <button 
+                  onClick={() => setSelectImage(null)}
+                  className="absolute top-0 right-0 bg-red-400 text-white rounded-full p-1"
+                >
+                  ✖
+                </button>
+              </div>
+          )}
+          </div>
+          <div className="p-4 border-t border-base-300 bg-base-100 flex items-center">
+          <button className="btn btn-ghost btn-circle" onClick={handleSelectPic}>
+            <input
+            type="file"
+            ref={imageRef}
+            className="hidden"
+            disabled={selectImage}
+            accept="image/*"
+            onChange={handleImageSelection}
+          />
+            <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${selectImage ? '' : 'text-grey-100'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
             </svg>
           </button>
@@ -206,10 +258,11 @@ const ChatApp = () => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
             </svg>
           </button>
+
+          </div>
         </div>
         </div>
         }
-        
 
       </div>
     </div>
