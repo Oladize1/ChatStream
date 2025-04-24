@@ -1,11 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAuthStore } from '../Store/Store.js';
 import {format} from 'timeago.js'
-import WelcomeBanner from '../Components/WelcomeGanner.jsx';
+import WelcomeBanner from '../Components/WelcomeBanner.jsx';
+import { Socket } from 'socket.io-client';
 
 const ChatApp = () => {
-  const { friendsList, getMessage, selectedUserMessages, authUser, selectedUser, sendMessage } = useAuthStore()
-  console.log("selected user id",selectedUser)
+  const { friendsList, getMessage, selectedUserMessages, authUser, selectedUser, sendMessage, onlineUsers, subscribeToMessage, unSubscribeToMessage, connectSocket} = useAuthStore()
+  
   const [activeChat, setActiveChat] = useState(null);
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState(selectedUserMessages);
@@ -15,6 +16,22 @@ const ChatApp = () => {
 
   const messagesEndRef = useRef(null)
   const imageRef = useRef(null)
+
+
+  useEffect(()=> {
+    if(authUser){
+       connectSocket()
+    }
+  }, [authUser])
+
+  useEffect(() => {
+  if (selectedUser) {
+    subscribeToMessage()
+    return () => {
+      unSubscribeToMessage()
+    }
+  }
+}, [selectedUser])
 
   useEffect(()=>{
     setMessages(selectedUserMessages)
@@ -52,7 +69,6 @@ const ChatApp = () => {
       return
     };
     const reader = new FileReader()
-    reader.readAsDataURL(file)
     reader.onload = ()=>{
       const image = reader.result
       setSelectImage(image)
@@ -62,7 +78,7 @@ const ChatApp = () => {
   const handleSendMessage =  () => {
     if (message.trim() === '' && !selectImage) return;
 
-    sendMessage(message, selectImage ,selectedUser[0])
+    sendMessage(message, selectImage ,selectedUser)
     setSelectImage(null)
     setMessage('');
     if(imageRef.current) imageRef.current.value = ''
@@ -109,20 +125,23 @@ const ChatApp = () => {
         </div>
         <div className="h-full">
         <div className="overflow-y-auto flex-1">
-          {friendsList.map((user) => (
+          {friendsList && friendsList.map((user) => (
             <div
               key={user._id}
               className={`flex items-center p-4 hover:bg-base-300 cursor-pointer ${activeChat === user._id ? 'bg-base-300' : ''}`}
               onClick={() => handleChatSelect(user._id)}
             >
-              <div className={`avatar ${user.online ? 'online' : 'offline'}`}>
+              <div className={`avatar indicator ${user.online ? 'online' : 'offline'}`}>
                 <div className="w-12 rounded-full">
                   <img src={user.profilePic || './profile.png'} alt={user.name} />
+                  {onlineUsers.includes(user._id) && (
+                    <span className="indicator-item status status-success"></span>
+                  )}
                 </div>
               </div>
               <div className="ml-3 flex-1">
-                <h3 className="font-semibold">{user.name}</h3>
-                <p className="text-sm text-gray-500 truncate">{user.lastMessage || ''}</p>
+                <h3 className="font-semibold">{user?.name}</h3>
+                {/* <p className="text-sm text-gray-500 truncate">{user.lastMessage || ''}</p> */}
               </div>
               <div className="text-xs text-gray-400">{user.time || ''}</div>
             </div>
@@ -165,8 +184,7 @@ const ChatApp = () => {
           </div>
           <div className="ml-3">
             <h3 className="font-semibold">{friendsList.find(u => u._id === activeChat)?.name}</h3>
-            {/* TODO: get online status */}
-            {/* <p className="text-sm text-gray-500">{users.find(u => u.id === activeChat)?.online ? 'Online' : 'Offline'}</p> */}
+            <p className="text-sm text-gray-500 font-medium ">{onlineUsers.includes(activeChat) ? 'Online' : 'Offline'}</p>
           </div>
           {/* TODO: video call and normal call */}
           {/* <div className="ml-auto flex space-x-4">

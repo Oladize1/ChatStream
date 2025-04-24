@@ -38,7 +38,7 @@ const LoginPage = () => {
     await login(email, password)
     navigate('/')
   } catch (error) {
-    toast.error(error.response?.data.message || 'Invalid credentials')  
+    toast.error(error.response?.data.message || 'Invalid Credentials')  
     console.log('error during login', error) 
   }
  }

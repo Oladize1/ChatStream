@@ -147,8 +147,6 @@ export const addFriends = async(req, res) => {
         const alreadyFriends = user.friends.some(f => f._id.equals(friend._id));
         const isSelf = user._id.equals(friend._id);
 
-        console.log("alreadyFriends", alreadyFriends)
-        console.log("isSelf", isSelf)
         if(alreadyFriends){
             return res.status(400).json({message: "User is already in your friend list"})
         }
@@ -163,7 +161,10 @@ export const addFriends = async(req, res) => {
             await friend.save()
         }
 
-        const updatedUser = await User.findById(id).populate('friends', 'name email profilePic');
+        const updatedUser = await User.findById(id).populate({
+            path: 'friends',
+            select: 'name email profilePic'
+        });
         return res.status(201).json({ message: "Add friend Successfully", friends: updatedUser.friends });
 
     } catch (error) {

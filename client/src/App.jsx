@@ -9,15 +9,14 @@ import HomePage from './Pages/HomePage'
 import Navbar from './Components/Navbar'
 import ProfilePage from './Pages/ProfilePage'
 import NotFoundPage from './Pages/NotFoundPage.jsx'
-import ChatRoom from './Components/ChatRoom.jsx'
-import Socket from './Components/socket.jsx'
+
 const App = () => {
-  const { authUser, checkAuth } = useAuthStore()
+  const { checkAuth } = useAuthStore()
   
   useEffect(()=>{
     checkAuth()
   }, [checkAuth])
-  console.log(authUser)
+  
   return (
     <>
     <Toaster/>

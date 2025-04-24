@@ -4,7 +4,7 @@ import Particles from 'react-tsparticles';
 
 const WelcomeBanner = () => {
   return (
-    <div className="relative flex justify-center items-center h-screen bg-gradient-to-br from-gray-900 to-gray-800 overflow-hidden">
+    <div className="relative flex justify-center items-center  h-screen bg-gradient-to-br from-gray-900 to-gray-800 overflow-hidden">
       {/* Animated Particles Background */}
       <Particles
         options={{
@@ -35,48 +35,32 @@ const WelcomeBanner = () => {
         transition={{ duration: 0.8, ease: 'easeOut' }}
         className="relative z-10 text-center px-4"
       >
-        {/* Animated Chat Bubble Logo */}
+        {/* Animated Chat Bubble Icon */}
         <motion.div
           animate={{
-            scale: [1, 1.05, 1],
-            rotate: [0, 5, -5, 0]
+            rotate: [0, 10, -10, 0],
+            scale: [1, 1.1, 1]
           }}
           transition={{
             repeat: Infinity,
-            repeatType: 'mirror',
-            duration: 4,
-            ease: "easeInOut"
+            repeatType: 'reverse',
+            duration: 4
           }}
-          className="mx-auto mb-8 w-28 h-28"
+          className="mx-auto mb-8 w-24 h-24 text-purple-400"
         >
-          <svg viewBox="0 0 24 24" className="text-blue-400">
-            {/* Modern chat bubble with message lines */}
-            <path 
-              fill="currentColor" 
-              d="M19 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14l4 4V4c0-1.1-.9-2-2-2zm-3 12H8v-2h8v2zm0-3H8V9h8v2zm0-3H8V6h8v2z"
-            />
-            {/* Optional: Add small decorative elements */}
-            <path 
-              fill="#a78bfa" 
-              d="M8 6h8v1H8z" 
-              className="opacity-80"
-            />
-            <path 
-              fill="#a78bfa" 
-              d="M8 9h8v1H8z" 
-              className="opacity-60"
-            />
-            <path 
-              fill="#a78bfa" 
-              d="M8 12h8v1H8z" 
-              className="opacity-40"
-            />
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            fill="currentColor" 
+            viewBox="0 0 24 24" 
+            className="w-full h-full"
+          >
+            <path d="M20 2H4C2.897 2 2 2.897 2 4v20l4-4h14c1.103 0 2-0.897 2-2V4C22 2.897 21.103 2 20 2zM20 16H5.172L4 17.172V4h16v12z"/>
           </svg>
         </motion.div>
 
         {/* Main Heading with Gradient */}
         <h1 className="text-5xl md:text-7xl font-extrabold mb-6">
-          <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+          <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
             ChatStream
           </span>
         </h1>
@@ -101,7 +85,7 @@ const WelcomeBanner = () => {
         </div>
 
         {/* Floating Dots Animation */}
-        <div className="absolute left-0 right-0 -bottom-20 flex justify-center space-x-4">
+        <div className="absolute left-0 right-0 flex justify-center space-x-4">
           {[...Array(5)].map((_, i) => (
             <motion.div
               key={i}
@@ -114,7 +98,7 @@ const WelcomeBanner = () => {
                 repeat: Infinity,
                 ease: 'easeInOut'
               }}
-              className="w-3 h-3 bg-blue-400 rounded-full"
+              className="w-3 h-3 bg-purple-400 rounded-full"
               style={{ animationDelay: `${i * 0.2}s` }}
             />
           ))}

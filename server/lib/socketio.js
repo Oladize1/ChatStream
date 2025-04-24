@@ -13,14 +13,23 @@ const io = new Server(server, {
     }
 })
 
+
+
 const userSocketMap = new Map()
+export function getRecieverSocketId  (userId){
+    const id = userSocketMap.get(userId)
+    console.log("reciever",id)
+    return id
+}
 io.on("connection", (socket) => {
-    const userId = socket.handshake.query.userId
-    console.log("user connected with id", socket.id)
+    const userId = socket.handshake.auth.userId
+    console.log("user connected with id", socket.id, userId)
     if (userId) {
         userSocketMap.set(userId, socket.id)
         console.log(`user that is logged in id: ${userId}, with his socket id ${socket.id}`)
+        io.emit("onlineUsers", [...userSocketMap.keys()])
     }
+
     socket.on("chat", (msg)=>{
         console.log(msg)
         io.emit('chat', msg)
@@ -30,14 +39,10 @@ io.on("connection", (socket) => {
         socket.join(room)
         console.log(`user with ${socket.id} join the room`)
     })
-
-
     socket.on("leave room", (room) => {
         socket.leave(room)
         console.log(`user with ${socket.id} join the room`)
     })
-
-
     socket.on("message room", ({room, message}) => {
         const fullMessage = {
             from:userId,
@@ -48,6 +53,8 @@ io.on("connection", (socket) => {
 
         io.to(room).emit('message room', fullMessage);
     })
+
+
     socket.on("private message", async ({touserId, senderId, message, sender}) => {
         const targetUser = userSocketMap.get(touserId)
         const newMessage = new Message({
@@ -80,8 +87,9 @@ io.on("connection", (socket) => {
            userSocketMap.delete(userId)
         break;
         }
+        io.emit("onlineUsers", [...userSocketMap.keys()])
     })
-    io.emit("onlineUsers", [...userSocketMap.keys()])
+    
 })
 
 

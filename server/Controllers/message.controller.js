@@ -1,6 +1,7 @@
 import Message from '../models/Message.js'
 import cloudinary from '../lib/cloudinary.js'
-
+import { getRecieverSocketId } from '../lib/socketio.js'
+import { io } from '../lib/socketio.js'
 export const sendMessage = async(req, res) =>{
     try {
         const { message, image } = req.body
@@ -22,6 +23,12 @@ export const sendMessage = async(req, res) =>{
             image: imageUrl || ''
         })
         await newMessage.save()
+        const reciever = getRecieverSocketId(recieverId)
+        console.log("get reciever id",reciever)
+        if(reciever){
+            io.to(reciever).emit("newMessage", newMessage)
+        }
+
      res.status(201).json(newMessage)  
     } catch (error) {
         console.log(error)
@@ -41,7 +48,7 @@ export const getMessage = async(req, res) => {
             ]
         }).sort({createdAt:1})
         res.status(200).json(messages)
-        console.log("messages from backend", messages)
+        
     } catch (error) {
         console.log(error)
         res.status(500).json({message: "Internal sever Error", error})
