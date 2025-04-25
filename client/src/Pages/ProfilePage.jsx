@@ -3,7 +3,13 @@ import { useAuthStore } from '../Store/Store';
 import Spinner from '../Components/Spinner'
 const ProfilePage = () => {
     const { authUser, updateProfilePic, isLoading } = useAuthStore()
-  // Hardcoded user data based on your provided object.
+    const fileInputRef = useRef(null);
+
+    if (isLoading) {
+     return <Spinner/>
+    }
+    if(!authUser) return null
+  
   const userData = {
     createdAt: authUser?.createdAt || " ",
     email: authUser?.email || "",
@@ -13,11 +19,7 @@ const ProfilePage = () => {
   };
 
 
- if (isLoading) {
-  return <Spinner/>
- }
 
-  const fileInputRef = useRef(null);
 
   // Trigger the hidden file input.
   const handleUpdatePic = () => {

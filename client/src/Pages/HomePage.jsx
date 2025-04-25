@@ -13,6 +13,8 @@ const ChatApp = () => {
   const [showSidebar, setShowSidebar] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [selectImage, setSelectImage] = useState(null)
+  const [filteredUsers, setFilteredUsers] = useState([])
+  const [searchUSer, setSearchUser] = useState('')
 
   const messagesEndRef = useRef(null)
   const imageRef = useRef(null)
@@ -58,6 +60,18 @@ const ChatApp = () => {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+ useEffect(() => {
+  if (searchUSer) {
+    // Filter the friends list based on search input
+    const filtered = friendsList.filter(user =>
+      user.name.toLowerCase().includes(searchUSer.toLowerCase())
+    );
+    setFilteredUsers(filtered); // Update the filtered users state
+  } else {
+    setFilteredUsers(friendsList); // If search is empty, display all users
+  }
+}, [searchUSer, friendsList]); // Re-run when searchUser or friendsList changes
 
   const handleSelectPic = () => {
     imageRef.current.click()
@@ -115,6 +129,8 @@ const ChatApp = () => {
               type="text"
               placeholder="Search..."
               className="w-full pl-10 pr-4 py-2 rounded-lg bg-base-200 focus:outline-none"
+              value={searchUSer}
+              onChange={(e) => setSearchUser(e.target.value)}
             />
             <span className="absolute left-3 top-3">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -125,7 +141,7 @@ const ChatApp = () => {
         </div>
         <div className="h-full">
         <div className="overflow-y-auto flex-1">
-          {friendsList && friendsList.map((user) => (
+          {filteredUsers && filteredUsers.map((user) => (
             <div
               key={user._id}
               className={`flex items-center p-4 hover:bg-base-300 cursor-pointer ${activeChat === user._id ? 'bg-base-300' : ''}`}

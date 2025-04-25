@@ -22,7 +22,11 @@ export const sendMailToNewUser = async (senderEmail, receiverEmail) => {
         </p>
 
         <p style="font-size: 16px; color: #333;">
-          Click the button below to sign up and start chatting instantly:
+          To connect with <strong>${senderEmail}</strong> and get started with your new ChatStream account, please sign up using the email <strong>${receiverEmail}</strong>. Once you sign up, your friend will be able to find you quickly and start chatting instantly!
+        </p>
+
+        <p style="font-size: 16px; color: #333;">
+          Click the button below to sign up and start chatting:
         </p>
 
         <div style="text-align: center; margin: 24px 0;">

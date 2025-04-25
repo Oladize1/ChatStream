@@ -48,6 +48,7 @@ export const useAuthStore = create(persist(
         await axiosInstance.post('/auth/logout')
         get().disconnectSocket()
         set({ isAuthenticated: false, isLoading: false, authUser: null, friendsList: [], selectedUser: null, selectedUserMessages: [], onlineUsers: [] })
+        localStorage.removeItem('auth-storage')
         toast.success('Logged out successfully')
       } catch (error) {
         toast.error('Logout failed')
