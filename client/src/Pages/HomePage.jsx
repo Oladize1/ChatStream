@@ -41,7 +41,7 @@ const ChatApp = () => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [selectedUserMessages]);
+  }, [activeChat]);
 
   // Check screen size and adjust sidebar visibility
   useEffect(() => {
@@ -98,7 +98,7 @@ const ChatApp = () => {
       
 
       {/* Sidebar */}
-      <div className={`${showSidebar ? 'block' : 'hidden'} md:block w-full md:w-1/3 lg:w-1/4 border-r border-base-300 bg-base-100 flex flex-col absolute md:relative z-40 h-full`}>
+      <div className={`${showSidebar ? 'block' : 'hidden'} md:block w-full md:w-1/3 lg:w-1/4 border-r border-base-300 bg-base-100 flex flex-col absolute md:relative h-screen overflow-y-auto -z-0`}>
         <div className="p-4 border-b border-base-300 flex justify-between items-center">
           <h2 className="text-xl font-bold">Chats</h2>
           {isMobile && (
@@ -151,7 +151,7 @@ const ChatApp = () => {
       </div>
 
       {/* Main Chat Area */}
-      <div className={`${!showSidebar || !isMobile ? 'block' : 'hidden'} md:block flex-1 flex flex-col relative`}>
+      <div className={`${!showSidebar || !isMobile ? 'block' : 'hidden'} md:block flex-1 flex flex-col relative h-screen overflow-y-auto`}>
         {isMobile && !showSidebar && (
           <button 
             onClick={() => setShowSidebar(true)}
@@ -219,7 +219,7 @@ const ChatApp = () => {
               } 
               alt="Profile" 
               onError={(e) => {
-                e.target.src = '/profile.png'; // Fallback if image fails to load
+                e.target.src = './profile.png'; // Fallback if image fails to load
               }}
             />
                 </div>
@@ -235,7 +235,7 @@ const ChatApp = () => {
         </div>
 
         {/* Message Input */}
-        <div className="flex flex-col">
+        <div className="flex flex-col sticky bottom-0">
           <div className='relative block'>
           { selectImage && (
               <div className="relative w-2xs">

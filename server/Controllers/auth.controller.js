@@ -116,14 +116,24 @@ export const updateProfilePic = async(req, res) => {
     }
 }
 
-export const checkAuth = (req, res) => {
-    try {
-        res.status(200).json(req.user)
-    } catch (error) {
-        console.log(error)
-        res.status(500).json({message: "Internal Server Error", error: error})
+export const checkAuth = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).populate({
+      path: 'friends',
+      select: 'name email profilePic'
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
     }
-}
+
+    res.status(200).json(user);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal Server Error", error: error.message });
+  }
+};
+
 
 export const addFriends = async(req, res) => {
     try {

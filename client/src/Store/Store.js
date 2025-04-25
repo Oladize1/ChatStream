@@ -71,6 +71,7 @@ export const useAuthStore = create(persist(
       set({ isLoading: true, error: null })
       try {
         const res = await axiosInstance.get('/auth/check')
+        console.log(res)
         set({ isAuthenticated: true, isLoading: false, authUser: res.data, friendsList: res.data.friends })
         get().connectSocket()
       } catch (error) {
