@@ -28,9 +28,7 @@ if (process.env.NODE_ENV === "production") {
     })
 }
 
-app.get('/test', (req, res) => {
-    res.send('Hello world')
-})
+
 
 const connect = async () => {
     try {
