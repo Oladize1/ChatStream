@@ -17,7 +17,7 @@ const Navbar = () => {
   }
 
   return (
-    <div className="navbar bg-base-100 shadow-sm  sticky top-0 z-10">
+    <div className="navbar bg-base-100 shadow-sm">
   <div className="flex-1">
     <Link to={'/'}>
         <img src="./logo-transparent.png" alt="Chat Stream logo" width={60} height={60}/>

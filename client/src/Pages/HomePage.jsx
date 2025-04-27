@@ -2,10 +2,11 @@ import { useState, useEffect, useRef } from 'react';
 import { useAuthStore } from '../Store/Store.js';
 import {format} from 'timeago.js'
 import WelcomeBanner from '../Components/WelcomeBanner.jsx';
-import { Socket } from 'socket.io-client';
+
+
 
 const ChatApp = () => {
-  const { friendsList, getMessage, selectedUserMessages, authUser, selectedUser, sendMessage, onlineUsers, subscribeToMessage, unSubscribeToMessage, connectSocket} = useAuthStore()
+  const { friendsList, getMessage, selectedUserMessages, authUser, selectedUser, sendMessage, onlineUsers, subscribeToMessage, unSubscribeToMessage, connectSocket, socket} = useAuthStore()
   
   const [activeChat, setActiveChat] = useState(null);
   const [message, setMessage] = useState('');
@@ -15,10 +16,14 @@ const ChatApp = () => {
   const [selectImage, setSelectImage] = useState(null)
   const [filteredUsers, setFilteredUsers] = useState([])
   const [searchUSer, setSearchUser] = useState('')
+  const [typing, setTyping] = useState(null)
+  if (typing) {
+    console.log("somebody is typing")
+  }
 
   const messagesEndRef = useRef(null)
   const imageRef = useRef(null)
-
+  const typingTimeoutRef = useRef(null)
 
   useEffect(()=> {
     if(authUser){
@@ -26,14 +31,29 @@ const ChatApp = () => {
     }
   }, [authUser])
 
-  useEffect(() => {
-  if (selectedUser) {
-    subscribeToMessage()
+useEffect(() => {
+  if (!selectedUser || !socket) return;
+    unSubscribeToMessage();
+    subscribeToMessage();
+
+    socket.off("typing");
+    socket.off("stop typing");
+
+    socket.on("typing", ({from}) => {
+      console.log("from", from)
+        setTyping(from);
+    });
+    socket.on("stop typing", ({from}) => {
+      setTyping(null);
+    });
+
     return () => {
-      unSubscribeToMessage()
-    }
-  }
-}, [selectedUser])
+      socket.off("typing");
+      socket.off("stop typing");
+      unSubscribeToMessage();
+    };
+}, [selectedUser, socket]);
+
 
   useEffect(()=>{
     setMessages(selectedUserMessages)
@@ -43,7 +63,7 @@ const ChatApp = () => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [activeChat]);
+  }, [messages]);
 
   // Check screen size and adjust sidebar visibility
   useEffect(() => {
@@ -73,6 +93,28 @@ const ChatApp = () => {
   }
 }, [searchUSer, friendsList]); // Re-run when searchUser or friendsList changes
 
+
+
+// Modified handleTyping
+const handleTyping = () => {
+  if (!socket || !selectedUser) return;
+
+  socket.emit("typing", {to: selectedUser, from: authUser._id});
+
+  // Clear previous timer
+  if (typingTimeoutRef.current) {
+    clearTimeout(typingTimeoutRef.current);
+  }
+
+  // Set a new timer
+  typingTimeoutRef.current = setTimeout(() => {
+    socket.emit("stop typing", {to: selectedUser, from: authUser._id});
+  }, 2000); // 2 seconds after last keystroke
+};
+
+
+
+
   const handleSelectPic = () => {
     imageRef.current.click()
   }
@@ -95,6 +137,11 @@ const ChatApp = () => {
     sendMessage(message, selectImage ,selectedUser)
     setSelectImage(null)
     setMessage('');
+    if (typingTimeoutRef.current) {
+    clearTimeout(typingTimeoutRef.current);
+  }
+    socket.emit("stop typing", { to: selectedUser, from: authUser._id });
+
     if(imageRef.current) imageRef.current.value = ''
   };
 
@@ -113,7 +160,7 @@ const ChatApp = () => {
 
       {/* Sidebar */}
       <div className={`${showSidebar ? 'block' : 'hidden'} md:block w-full md:w-1/3 lg:w-1/4 border-r border-base-300 bg-base-100 flex flex-col absolute md:relative h-screen overflow-y-auto -z-0`}>
-        <div className="p-4 border-b border-base-300 flex justify-between items-center">
+        <div className="p-4 border-b border-base-300 flex justify-between items-center sticky">
           <h2 className="text-xl font-bold">Chats</h2>
           {isMobile && (
             <button onClick={() => setShowSidebar(false)} className="btn btn-circle btn-sm">
@@ -123,7 +170,7 @@ const ChatApp = () => {
             </button>
           )}
         </div>
-        <div className="p-4 border-b border-base-300">
+        <div className="p-4 border-b border-base-300 sticky">
           <div className="relative">
             <input
               type="text"
@@ -200,7 +247,7 @@ const ChatApp = () => {
           </div>
           <div className="ml-3">
             <h3 className="font-semibold">{friendsList.find(u => u._id === activeChat)?.name}</h3>
-            <p className="text-sm text-gray-500 font-medium ">{onlineUsers.includes(activeChat) ? 'Online' : 'Offline'}</p>
+            <p className="text-sm text-gray-500 font-medium ">{onlineUsers.includes(activeChat) ? typing === activeChat ? <span className='animate-pulse'>Typing...</span> : 'Online' : 'Offline'}</p>
           </div>
           {/* TODO: video call and normal call */}
           {/* <div className="ml-auto flex space-x-4">
@@ -245,9 +292,9 @@ const ChatApp = () => {
                 {msg?.text}
                 </div>
               <div className="chat-footer opacity-50 text-xs mt-1">{format(msg.createdAt)}</div>
-              <div ref={messagesEndRef}/>
             </div>
           ))}
+          <div ref={messagesEndRef}/>
         </div>
 
         {/* Message Input */}
@@ -284,10 +331,14 @@ const ChatApp = () => {
             placeholder="Type a message..."
             className="flex-1 mx-4 input input-bordered focus:outline-none"
             value={message}
-            onChange={(e) => setMessage(e.target.value)}
+            onChange={(e) => {setMessage(e.target.value)
+              handleTyping()}
+            }
             onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
           />
-          <button className="btn btn-primary" onClick={handleSendMessage}>
+          <button className="btn btn-primary" onClick={() => {
+            handleSendMessage()
+          }}>
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
             </svg>

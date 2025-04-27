@@ -71,13 +71,20 @@ io.on("connection", (socket) => {
         }
     })
 
-    socket.on("typing", (username)=>{
-        socket.broadcast.emit("typing", username)
-    })
+    socket.on("typing", ({to, from}) => {
+    const targetSocketId = userSocketMap.get(to);
+    if (targetSocketId) {
+        io.to(targetSocketId).emit("typing", {from});
+    }
+});
 
-    socket.on("stop typing", (username)=> {
-        socket.broadcast.emit("stop typing", username)
-    })
+socket.on("stop typing", ({to, from}) => {
+    const targetSocketId = userSocketMap.get(to);
+    if (targetSocketId) {
+        io.to(targetSocketId).emit("stop typing", {from});
+    }
+});
+
 
 
     socket.on("disconnect", () => {

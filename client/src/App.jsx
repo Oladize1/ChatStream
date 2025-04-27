@@ -10,6 +10,7 @@ import Navbar from './Components/Navbar'
 import ProfilePage from './Pages/ProfilePage'
 import NotFoundPage from './Pages/NotFoundPage.jsx'
 
+
 const App = () => {
   const { checkAuth } = useAuthStore()
   
