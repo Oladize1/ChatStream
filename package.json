@@ -1,0 +1,23 @@
+{
+  "name": "chatstream",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build":"npm install --prefix server && npm install --prefix client && npm run build --prefix client",
+    "start": "npm  run start --prefix server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Oladize1/ChatStream.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Oladize1/ChatStream/issues"
+  },
+  "homepage": "https://github.com/Oladize1/ChatStream#readme",
+  "description": ""
+}

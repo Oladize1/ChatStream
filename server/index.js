@@ -2,12 +2,13 @@ import express from 'express'
 import dotenv from 'dotenv'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
+import path from 'path'
 import { app, server } from './lib/socketio.js'
 dotenv.config()
 
 import {authRouter} from './Routes/auth.js'
 import { messageRouter } from './Routes/message.js'
-
+const __dirname = path.resolve()
 
 import { connectDb } from './DB/connectDB.js'
 app.use(cors({
@@ -19,6 +20,13 @@ app.use(express.urlencoded({extended: true}))
 app.use(cookieParser())
 app.use('/api/auth', authRouter)
 app.use('/api/message', messageRouter)
+
+if (process.env.NODE_ENV === "production") {
+    app.use(express.static(path.join(__dirname, "../client/dist")))
+    app.get("*", (req, res) => {
+        res.sendFile(path.join(__dirname, "../client", "dist", "index.html"))
+    })
+}
 
 app.get('/test', (req, res) => {
     res.send('Hello world')
