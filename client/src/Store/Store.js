@@ -140,7 +140,7 @@ export const useAuthStore = create(persist(
       })
     },
     subscribeToMessage: () => {
-      const {selectedUser, socket, selectedUserMessages} = get()
+      const {selectedUser, socket} = get()
        if (!socket || !selectedUser) {
            console.warn("Socket not ready or no user selected");
           return;
