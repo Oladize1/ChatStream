@@ -30,7 +30,7 @@ export const sendMailToNewUser = async (senderEmail, receiverEmail) => {
         </p>
 
         <div style="text-align: center; margin: 24px 0;">
-          <a href="http://localhost:5173/signup" 
+          <a href="https://chatstream-07t0.onrender.com/signup" 
              style="background-color: #4F46E5; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold; display: inline-block;">
             🚀 Join ChatStream Now
           </a>

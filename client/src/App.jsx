@@ -9,6 +9,7 @@ import HomePage from './Pages/HomePage'
 import Navbar from './Components/Navbar'
 import ProfilePage from './Pages/ProfilePage'
 import NotFoundPage from './Pages/NotFoundPage.jsx'
+import VideoCall from './Components/VideoCall.jsx'
 
 
 const App = () => {
@@ -28,6 +29,7 @@ const App = () => {
       <Route path='' element={<ProtectedRoute/>}>
         <Route path='/' element={<HomePage/>}/>
         <Route path='/profile' element={<ProfilePage/>}/>
+        <Route path='/video-call' element={<VideoCall/>}/>
       </Route>
         <Route path='/*' element={<NotFoundPage/>}/>
     </Routes>

@@ -8,6 +8,7 @@ dotenv.config()
 
 import {authRouter} from './Routes/auth.js'
 import { messageRouter } from './Routes/message.js'
+import { callRouter } from './Routes/call.js'
 const __dirname = path.resolve()
 
 import { connectDb } from './DB/connectDB.js'
@@ -20,6 +21,7 @@ app.use(express.urlencoded({extended: true}))
 app.use(cookieParser())
 app.use('/api/auth', authRouter)
 app.use('/api/message', messageRouter)
+app.use('/api/call', callRouter)
 
 if (process.env.NODE_ENV === "production") {
     app.use(express.static(path.join(__dirname, "../client/dist")))
