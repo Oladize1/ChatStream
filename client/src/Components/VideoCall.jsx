@@ -6,7 +6,7 @@ import { useAuthStore } from '../Store/Store';
 
 const VideoCall = () => {
     const { selectedUser } = useAuthStore()
-    console.log("selected user",selectedUser)
+    console.log("selected user", selectedUser)
   return (
     <div>VideoCall</div>
   )

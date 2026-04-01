@@ -20,20 +20,22 @@ const App = () => {
   }, [checkAuth])
   
   return (
-    <>
-    <Toaster/>
+    <div className="flex flex-col h-screen overflow-hidden">
+      <Toaster/>
       <Navbar/>
-    <Routes>
-      <Route path='/signup' element={<SignupPage/>}/>
-      <Route path='/login' element={<LoginPage/>}/>
-      <Route path='' element={<ProtectedRoute/>}>
-        <Route path='/' element={<HomePage/>}/>
-        <Route path='/profile' element={<ProfilePage/>}/>
-        <Route path='/video-call' element={<VideoCall/>}/>
-      </Route>
-        <Route path='/*' element={<NotFoundPage/>}/>
-    </Routes>
-    </>
+      <main className="flex-1 min-h-0 overflow-y-auto flex flex-col relative">
+        <Routes>
+          <Route path='/signup' element={<SignupPage/>}/>
+          <Route path='/login' element={<LoginPage/>}/>
+          <Route path='' element={<ProtectedRoute/>}>
+            <Route path='/' element={<HomePage/>}/>
+            <Route path='/profile' element={<ProfilePage/>}/>
+            <Route path='/video-call' element={<VideoCall/>}/>
+          </Route>
+            <Route path='/*' element={<NotFoundPage/>}/>
+        </Routes>
+      </main>
+    </div>
   )
 }
 

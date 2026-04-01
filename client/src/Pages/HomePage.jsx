@@ -155,12 +155,12 @@ const handleTyping = () => {
   };
 
   return (
-    <div className="flex h-screen bg-base-200">
+    <div className="flex flex-1 h-full bg-base-200 overflow-hidden w-full">
       
 
       {/* Sidebar */}
-      <div className={`${showSidebar ? 'block' : 'hidden'} md:block w-full md:w-1/3 lg:w-1/4 border-r border-base-300 bg-base-100 flex flex-col absolute md:relative h-screen overflow-y-auto -z-0`}>
-        <div className="p-4 border-b border-base-300 flex justify-between items-center sticky">
+      <div className={`${showSidebar ? 'flex' : 'hidden'} md:flex w-full md:w-1/3 lg:w-1/4 border-r border-base-300 bg-base-100 flex-col absolute md:relative h-full overflow-hidden -z-0`}>
+        <div className="p-4 border-b border-base-300 flex justify-between items-center shrink-0">
           <h2 className="text-xl font-bold">Chats</h2>
           {isMobile && (
             <button onClick={() => setShowSidebar(false)} className="btn btn-circle btn-sm">
@@ -170,7 +170,7 @@ const handleTyping = () => {
             </button>
           )}
         </div>
-        <div className="p-4 border-b border-base-300 sticky">
+        <div className="p-4 border-b border-base-300 shrink-0">
           <div className="relative">
             <input
               type="text"
@@ -186,7 +186,6 @@ const handleTyping = () => {
             </span>
           </div>
         </div>
-        <div className="h-full">
         <div className="overflow-y-auto flex-1">
           {filteredUsers && filteredUsers.map((user) => (
             <div
@@ -210,11 +209,10 @@ const handleTyping = () => {
             </div>
           ))}
         </div>
-        </div>
       </div>
 
       {/* Main Chat Area */}
-      <div className={`${!showSidebar || !isMobile ? 'block' : 'hidden'} md:block flex-1 flex flex-col relative h-screen overflow-y-auto`}>
+      <div className={`${!showSidebar || !isMobile ? 'flex' : 'hidden'} md:flex flex-1 flex-col relative h-full overflow-hidden`}>
         {isMobile && !showSidebar && (
           <button 
             onClick={() => setShowSidebar(true)}
@@ -227,7 +225,7 @@ const handleTyping = () => {
         )}
 
         {!activeChat ? <WelcomeBanner/>: 
-        <div>
+        <div className="flex flex-col flex-1 h-full overflow-hidden w-full">
         {/* Chat Header */}
         <div className="p-4 border-b border-base-300 bg-base-100 flex items-center">
           {isMobile && (
@@ -298,7 +296,7 @@ const handleTyping = () => {
         </div>
 
         {/* Message Input */}
-        <div className="flex flex-col sticky bottom-0">
+        <div className="flex flex-col shrink-0 bg-base-100">
           <div className='relative block'>
           { selectImage && (
               <div className="relative w-2xs">
@@ -339,8 +337,9 @@ const handleTyping = () => {
           <button className="btn btn-primary" onClick={() => {
             handleSendMessage()
           }}>
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="m22 2-7 20-4-9-9-4Z"/>
+              <path d="M22 2 11 13"/>
             </svg>
           </button>
 
